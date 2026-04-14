@@ -1,0 +1,18 @@
+{
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/mechanic.html" },
+    { "source": "/mechanic",  "destination": "/mechanic.html" },
+    { "source": "/customer",  "destination": "/customer.html" },
+    { "source": "/login",     "destination": "/login.html"    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin",  "value": "*" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" }
+      ]
+    }
+  ]
+}

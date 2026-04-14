@@ -3,388 +3,403 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RepairAll Auto LLC - Pay Invoice</title>
+  <title>Pay Invoice</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://js.stripe.com/v3/"></script>
   <style>
-    :root {
-      --bg: #f5f0e8;
-      --surface: #ffffff;
-      --surface2: #f9f6f0;
-      --border: #e0d8cc;
-      --accent: #e8440a;
-      --accent-dim: rgba(232, 68, 10, 0.08);
-      --text: #1a1510;
-      --muted: #9a9088;
-      --success: #1e9e5a;
-      --success-bg: #f0faf5;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #000;
+      --text:       #fff;
+      --muted:      rgba(255,255,255,0.42);
+      --border:     rgba(255,255,255,0.13);
+      --surface:    rgba(255,255,255,0.03);
+      --surface2:   rgba(255,255,255,0.06);
+      --accent:     #e8440a;
+      --accent-dim: rgba(232,68,10,0.1);
+      --success:    #2dbd6e;
+      --success-bg: rgba(45,189,110,0.08);
+    }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    body::before {
-      content: '';
+    /* ── Nav ── */
+    nav {
       position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 18px 40px;
+      top: 0; left: 0; right: 0;
+      height: 60px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      background: rgba(245,240,232,0.9);
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.92);
       backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
+      -webkit-backdrop-filter: blur(10px);
       z-index: 100;
     }
 
-    .logo-main {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 24px;
-      letter-spacing: 2px;
+    .nav-logo {
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: -0.01em;
       color: var(--text);
+      text-decoration: none;
     }
 
-    .logo-sep { color: var(--border); }
+    .nav-links { display: flex; align-items: center; gap: 1.75rem; }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nav-cta:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
 
     .logo-sub {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 0.58rem;
       color: var(--muted);
-      letter-spacing: 2px;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
+    /* ── Page layout ── */
     .page-wrap {
       flex: 1;
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 48px 20px;
-      position: relative;
-      z-index: 1;
+      padding: 5rem 1.25rem 3rem;
     }
 
+    /* ── Card ── */
     .card {
       width: 100%;
-      max-width: 560px;
-      background: var(--surface);
+      max-width: 540px;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 4px;
       overflow: hidden;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.06);
     }
 
+    /* ── Loading / error / success states ── */
     .state-screen {
-      padding: 80px 40px;
+      padding: 5rem 2.5rem;
       text-align: center;
     }
 
-    .state-icon { font-size: 40px; margin-bottom: 16px; }
+    .state-icon { font-size: 2.25rem; margin-bottom: 1rem; }
 
     .state-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
     }
 
-    .state-desc {
-      color: var(--muted);
-      font-size: 14px;
-    }
+    .state-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
 
     .spinner {
-      width: 32px;
-      height: 32px;
+      width: 28px; height: 28px;
       border: 2px solid var(--border);
-      border-top-color: var(--accent);
+      border-top-color: var(--text);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
-      margin: 0 auto 16px;
+      margin: 0 auto 1rem;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── Invoice top ── */
     .invoice-top {
-      padding: 32px 36px 24px;
+      padding: 1.75rem 2rem 1.5rem;
       border-bottom: 1px solid var(--border);
-      background: var(--surface2);
+      background: var(--surface);
     }
 
     .inv-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 16px;
+      margin-bottom: 0.875rem;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
-
     .inv-badge::before {
       content: '';
       display: inline-block;
-      width: 6px;
-      height: 6px;
+      width: 5px; height: 5px;
       border-radius: 50%;
       background: var(--accent);
     }
 
     .customer-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px;
-      letter-spacing: 2px;
-      color: var(--text);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
       margin-bottom: 4px;
     }
 
-    .vehicle-info {
-      font-size: 13px;
-      color: var(--muted);
-      letter-spacing: 0.5px;
-    }
+    .vehicle-info { font-size: 0.82rem; color: var(--muted); }
 
+    /* ── Services ── */
     .services-section {
-      padding: 24px 36px;
+      padding: 1.25rem 2rem;
       border-bottom: 1px solid var(--border);
     }
 
     .section-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 3px;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 14px;
+      font-weight: 600;
+      margin-bottom: 0.875rem;
     }
 
     .service-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
+      padding: 0.625rem 0;
       border-bottom: 1px solid var(--border);
-      font-size: 14px;
+      font-size: 0.875rem;
     }
-
     .service-item:last-child { border-bottom: none; }
+    .service-name  { color: var(--text); }
+    .service-price { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-    .service-name { color: var(--text); }
-    .service-price {
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      color: var(--text);
-    }
-
+    /* ── Total row ── */
     .total-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px 36px;
+      padding: 1rem 2rem;
       background: var(--accent-dim);
       border-bottom: 1px solid rgba(232,68,10,0.15);
     }
 
     .total-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
+      font-weight: 600;
     }
 
     .total-amount {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 38px;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
       color: var(--accent);
-      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
     }
 
+    /* ── Notes ── */
     .notes-section {
-      padding: 16px 36px;
+      padding: 0.875rem 2rem;
       border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .notes-text { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Payment section ── */
+    .payment-section { padding: 1.5rem 2rem 2rem; }
+    .payment-section .section-label { margin-bottom: 1.25rem; }
+
+    #payment-element { margin-bottom: 1.25rem; }
+
+    #payment-error {
+      color: var(--accent);
+      font-size: 0.8rem;
+      margin-bottom: 0.875rem;
+      padding: 0.75rem 0.875rem;
+      background: var(--accent-dim);
+      border-radius: 3px;
+      border: 1px solid rgba(232,68,10,0.2);
+      display: none;
     }
 
-    .notes-text {
-      font-size: 13px;
+    /* ── SMS consent ── */
+    .consent-block {
+      margin-bottom: 1.125rem;
+      padding: 0.875rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+    }
+    .consent-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 0.75rem;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.55;
+    }
+    .consent-label input[type="checkbox"] {
+      margin-top: 2px;
+      flex-shrink: 0;
+      width: 14px; height: 14px;
+      accent-color: var(--accent);
+      cursor: pointer;
     }
 
-    .payment-section {
-      padding: 28px 36px 36px;
-    }
-
-    .payment-section .section-label { margin-bottom: 20px; }
-
-    #payment-element {
-      margin-bottom: 20px;
-    }
-
+    /* ── Pay button ── */
     .pay-btn {
       width: 100%;
-      background: var(--accent);
+      background: var(--text);
       border: none;
-      color: #fff;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px;
-      letter-spacing: 3px;
-      padding: 16px;
+      color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.95rem;
       border-radius: 3px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: opacity 0.2s;
     }
-
-    .pay-btn:hover { background: #d03a08; }
-    .pay-btn:active { transform: scale(0.99); }
-    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .pay-btn:hover { opacity: 0.85; }
+    .pay-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
     .secure-note {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      margin-top: 14px;
-      font-size: 11px;
+      margin-top: 0.875rem;
+      font-size: 0.62rem;
       color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      letter-spacing: 1px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
-    #payment-error {
-      color: #c0392b;
-      font-size: 13px;
-      margin-top: 12px;
-      padding: 10px 14px;
-      background: #fdf2f0;
-      border-radius: 3px;
-      border: 1px solid #f0c0b8;
-      display: none;
-    }
-
+    /* ── Success screen ── */
     .success-screen {
-      padding: 60px 36px;
+      padding: 4rem 2.5rem;
       text-align: center;
     }
 
     .success-icon {
-      width: 64px;
-      height: 64px;
+      width: 56px; height: 56px;
       background: var(--success-bg);
-      border: 2px solid var(--success);
+      border: 1px solid rgba(45,189,110,0.3);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 24px;
-      font-size: 28px;
+      margin: 0 auto 1.5rem;
+      font-size: 1.5rem;
     }
 
     .success-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px;
-      letter-spacing: 2px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
       color: var(--success);
-      margin-bottom: 8px;
+      margin-bottom: 0.5rem;
     }
 
     .success-desc {
-      font-size: 14px;
+      font-size: 0.875rem;
       color: var(--muted);
       line-height: 1.6;
     }
 
     .success-ref {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
+      font-size: 0.65rem;
       color: var(--muted);
-      margin-top: 20px;
-      letter-spacing: 1px;
-    }
-
-    footer {
-      padding: 20px;
-      text-align: center;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 1px;
+      margin-top: 1.25rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
     }
 
+    /* ── Footer ── */
+    footer {
+      padding: 1.25rem;
+      text-align: center;
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-top: 1px solid var(--border);
+    }
+
     @media (max-width: 600px) {
-      header { padding: 14px 20px; }
-      .invoice-top, .services-section, .payment-section { padding-left: 24px; padding-right: 24px; }
-      .total-row { padding: 16px 24px; }
-      .notes-section { padding: 14px 24px; }
+      header { padding: 0 1.25rem; }
+      .invoice-top, .services-section, .payment-section { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .total-row, .notes-section { padding-left: 1.25rem; padding-right: 1.25rem; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <span class="logo-main">RepairAll Auto LLC</span>
-  <span class="logo-sep">|</span>
-  <span class="logo-sub">Secure Payment</span>
-</header>
+<nav>
+  <a href="/" class="nav-logo" id="shopNameHeader">Your Shop</a>
+  <div class="nav-links">
+    <a href="/#tiers">Plans</a>
+    <a href="/#join" class="nav-cta">Join Now</a>
+  </div>
+</nav>
 
 <div class="page-wrap">
   <div class="card" id="card">
     <div class="state-screen" id="loadingScreen">
       <div class="spinner"></div>
-      <div class="state-desc">Loading your invoice...</div>
+      <div class="state-desc">Loading your invoice…</div>
     </div>
   </div>
 </div>
 
-<footer>Powered by Stripe | RepairAll Auto LLC © 2025</footer>
+<footer id="shopFooter">Powered by Stripe</footer>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+<script>
+  const STRIPE_PK = 'pk_test_51TGJM5QZfqTSZT3gkyD2USHzlNoRPtHWlnkjxzEsn83gdKBuyFZsjftGB7lnEgBhoaStyp6XreWUgPDJ1N0pPW9d00EmVEB0hU';
+  const stripe    = Stripe(STRIPE_PK);
 
-  const SUPABASE_URL = 'https://kvxwjpsunapmutrpgjrp.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2eHdqcHN1bmFwbXV0cnBnanJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3ODcxMTksImV4cCI6MjA5MDM2MzExOX0.U8XzwR7kh5pJ8_Pq16lxuTp5wrAwA7BmXLIwpE-ZzhY';
-  const STRIPE_PUBLISHABLE_KEY = 'pk_test_51TGJM5QZfqTSZT3gkyD2USHzlNoRPtHWlnkjxzEsn83gdKBuyFZsjftGB7lnEgBhoaStyp6XreWUgPDJ1N0pPW9d00EmVEB0hU';
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
-  const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-
-  const params = new URLSearchParams(location.search);
-  const invoiceId = params.get('id');
-  const redirectStatus = params.get('redirect_status');
+  const params          = new URLSearchParams(location.search);
+  const invoiceId       = params.get('id');
+  const redirectStatus  = params.get('redirect_status');
   const paymentIntentId = params.get('payment_intent');
-  const card = document.getElementById('card');
+  const card            = document.getElementById('card');
 
-  function escapeHtml(value) {
-    return String(value ?? '')
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+  function escapeHtml(v) {
+    return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;')
+      .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
   }
-
-  function formatMoney(value) {
-    return '$' + Number(value || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  function formatMoney(v) {
+    return '$' + Number(v || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   function showError(title, desc) {
@@ -396,14 +411,31 @@
       </div>`;
   }
 
+  function setBranding(inv) {
+    const name = inv.shop_name || 'Your Mechanic';
+    document.getElementById('shopNameHeader').textContent = name;
+    document.title = name + ' — Pay Invoice';
+    document.getElementById('shopFooter').textContent =
+      `Powered by Stripe | ${name} © ${new Date().getFullYear()}`;
+  }
+
   function showPaidScreen(inv) {
+    const shopName = inv.shop_name || 'Your Mechanic';
     card.innerHTML = `
       <div class="success-screen">
         <div class="success-icon">✓</div>
         <div class="success-title">Payment Received</div>
         <div class="success-desc">Thank you, ${escapeHtml(inv.customer_name)}!<br>Your payment has been processed successfully.</div>
-        <div class="success-ref">${escapeHtml(inv.invoice_id)} · RepairAll Auto LLC</div>
+        <div class="success-ref">${escapeHtml(inv.invoice_id)} · ${escapeHtml(shopName)}</div>
       </div>`;
+  }
+
+  async function updateInvoice(recordId, fields) {
+    await fetch('/api/update-invoice', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ record_id: recordId, fields }),
+    });
   }
 
   if (!invoiceId) {
@@ -413,27 +445,39 @@
   }
 
   async function loadInvoice() {
-    const { data: inv, error } = await supabase
-      .from('invoices')
-      .select('*')
-      .eq('invoice_id', invoiceId)
-      .single();
+    // Step 1: Fetch invoice data via Netlify Function (API key stays server-side)
+    let inv, recordId;
 
-    if (error || !inv) {
-      showError('Invoice Not Found', 'This invoice link is invalid or has expired.');
+    try {
+      const res  = await fetch(`/api/get-invoice?id=${encodeURIComponent(invoiceId)}`);
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        showError('Invoice Not Found', data.error || 'This link is invalid or has expired.');
+        return;
+      }
+
+      inv      = data.invoice;
+      recordId = inv._recordId;
+    } catch {
+      showError('Connection Error', 'Could not reach the server. Please try again.');
       return;
     }
 
-    if (redirectStatus === 'succeeded' && paymentIntentId) {
-      await supabase
-        .from('invoices')
-        .update({ status: 'paid', stripe_payment_intent: paymentIntentId })
-        .eq('invoice_id', invoiceId);
+    // Update header branding with shop name
+    setBranding(inv);
 
+    // Step 2: Handle Stripe redirect return (payment already confirmed)
+    if (redirectStatus === 'succeeded' && paymentIntentId) {
+      await updateInvoice(recordId, {
+        status:                 'paid',
+        stripe_payment_intent:  paymentIntentId,
+      });
       showPaidScreen(inv);
       return;
     }
 
+    // Step 3: Already paid?
     if (inv.status === 'paid') {
       card.innerHTML = `
         <div class="success-screen">
@@ -445,12 +489,10 @@
       return;
     }
 
-    const services = (() => {
-      try { return JSON.parse(inv.services); }
-      catch { return []; }
-    })();
-
-    const totalCents = Math.round(parseFloat(inv.total_amount) * 100);
+    // Step 4: Render invoice and payment form
+    const shopName = inv.shop_name || 'Your Mechanic';
+    let services = [];
+    try { services = JSON.parse(inv.services); } catch {}
 
     card.innerHTML = `
       <div class="invoice-top">
@@ -461,12 +503,11 @@
 
       <div class="services-section">
         <div class="section-label">Services</div>
-        ${services.map((s) => `
+        ${services.map(s => `
           <div class="service-item">
             <span class="service-name">${escapeHtml(s.name)}</span>
             <span class="service-price">${formatMoney(s.price)}</span>
-          </div>
-        `).join('')}
+          </div>`).join('')}
       </div>
 
       <div class="total-row">
@@ -475,86 +516,104 @@
       </div>
 
       ${inv.notes ? `
-        <div class="notes-section">
-          <div class="section-label">Notes</div>
-          <div class="notes-text">${escapeHtml(inv.notes)}</div>
-        </div>` : ''}
+      <div class="notes-section">
+        <div class="section-label">Notes</div>
+        <div class="notes-text">${escapeHtml(inv.notes)}</div>
+      </div>` : ''}
 
       <div class="payment-section">
         <div class="section-label">Payment Details</div>
         <div id="payment-element"></div>
         <div id="payment-error"></div>
+        <div class="consent-block">
+          <label class="consent-label">
+            <input type="checkbox" id="smsConsent" />
+            <span>I agree to receive text message updates about this invoice from ${escapeHtml(shopName)}. Msg &amp; data rates may apply.</span>
+          </label>
+        </div>
         <button class="pay-btn" id="payBtn">Pay ${formatMoney(inv.total_amount)}</button>
         <div class="secure-note">🔒 Secured by Stripe</div>
       </div>`;
 
+    // Step 5: Create Stripe PaymentIntent via Netlify Function
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-payment-intent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
-          'apikey': SUPABASE_ANON,
-        },
-        body: JSON.stringify({
-          amount: totalCents,
-          invoice_id: invoiceId,
-          currency: 'usd'
-        })
+      const res  = await fetch('/api/create-payment-intent', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ invoice_id: invoiceId }),
       });
-
-      const text = await res.text();
-      if (!res.ok) throw new Error(text || 'Backend not configured');
-
-      const { clientSecret } = JSON.parse(text);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Payment setup failed');
 
       const elements = stripe.elements({
-        clientSecret,
+        clientSecret: data.clientSecret,
         appearance: {
-          theme: 'stripe',
+          theme: 'night',
           variables: {
-            colorPrimary: '#e8440a',
-            colorBackground: '#ffffff',
-            colorText: '#1a1510',
-            colorDanger: '#c0392b',
-            fontFamily: 'DM Sans, sans-serif',
-            borderRadius: '3px',
-          }
-        }
+            colorPrimary:     '#e8440a',
+            colorBackground:  '#0a0a0a',
+            colorText:        '#ffffff',
+            colorDanger:      '#e8440a',
+            fontFamily:       'Inter, sans-serif',
+            borderRadius:     '3px',
+          },
+          rules: {
+            '.Input': { border: '1px solid rgba(255,255,255,0.13)', backgroundColor: 'transparent' },
+            '.Input:focus': { border: '1px solid rgba(255,255,255,0.35)', outline: 'none', boxShadow: 'none' },
+          },
+        },
       });
 
       const paymentElement = elements.create('payment');
       paymentElement.mount('#payment-element');
 
+      // Step 6: Handle pay button click
       document.getElementById('payBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('payBtn');
-        const errEl = document.getElementById('payment-error');
+        const btn        = document.getElementById('payBtn');
+        const errEl      = document.getElementById('payment-error');
+        const consentBox = document.getElementById('smsConsent');
 
-        btn.disabled = true;
-        btn.textContent = 'Processing...';
+        // Require SMS consent
+        if (!consentBox.checked) {
+          errEl.textContent    = 'Please agree to receive text updates before paying.';
+          errEl.style.display  = 'block';
+          return;
+        }
+
+        btn.disabled    = true;
+        btn.textContent = 'Processing…';
         errEl.style.display = 'none';
+
+        // Save SMS consent before payment redirect
+        await updateInvoice(recordId, {
+          sms_consent:    true,
+          sms_consent_at: new Date().toISOString(),
+        });
 
         const { error } = await stripe.confirmPayment({
           elements,
           confirmParams: {
-            return_url: `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(invoiceId)}`
-          }
+            return_url: `${location.origin}${location.pathname}?id=${encodeURIComponent(invoiceId)}`,
+          },
         });
 
         if (error) {
-          errEl.textContent = error.message || 'Payment failed.';
+          errEl.textContent   = error.message || 'Payment failed.';
           errEl.style.display = 'block';
-          btn.disabled = false;
-          btn.textContent = `Pay ${formatMoney(inv.total_amount)}`;
+          btn.disabled        = false;
+          btn.textContent     = `Pay ${formatMoney(inv.total_amount)}`;
         }
       });
+
     } catch (e) {
-      document.getElementById('payment-element').innerHTML = `
-        <div style="padding:16px;background:#fdf8f5;border:1px dashed #e0d8cc;border-radius:3px;font-size:12px;color:#9a9088;font-family:'DM Mono',monospace;letter-spacing:1px;line-height:1.8;">
-          ⚠️ PAYMENT UNAVAILABLE<br>
-          Could not connect to payment processor.<br>
-          Please contact RepairAll Auto LLC directly.
-        </div>`;
+      const el = document.getElementById('payment-element');
+      if (el) {
+        el.innerHTML = `
+          <div style="padding:1rem;border:1px dashed var(--border);border-radius:3px;font-size:0.78rem;color:var(--muted);line-height:1.8;">
+            ⚠️ Payment unavailable — could not connect to payment processor.<br>
+            Please contact ${escapeHtml(shopName)} directly.
+          </div>`;
+      }
       console.error('Payment setup error:', e);
     }
   }

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Membership — Your Shop</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:         #000;
+      --text:       #fff;
+      --muted:      rgba(255,255,255,0.42);
+      --border:     rgba(255,255,255,0.13);
+      --surface:    rgba(255,255,255,0.03);
+      --surface2:   rgba(255,255,255,0.06);
+      --accent:     #e8440a;
+      --accent-dim: rgba(232,68,10,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100;
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .nav-links { display: flex; align-items: center; gap: 1.75rem; }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      font-size: 0.68rem;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nav-cta:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 5rem;
+      animation: fadeUp 0.9s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.5;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.04;
+      max-width: 700px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title em {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 460px;
+      margin-bottom: 2.75rem;
+    }
+
+    .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; justify-content: center; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--text);
+      color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.9rem 1.875rem;
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary .arr { transition: transform 0.2s; }
+    .btn-primary:hover .arr { transform: translateX(4px); }
+
+    .btn-ghost {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-ghost:hover { color: var(--text); }
+
+    /* ── Value strip ── */
+    .value-strip {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .value-item {
+      flex: 1;
+      min-width: 180px;
+      padding: 1.5rem 1.75rem;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .value-item:last-child { border-right: none; }
+
+    .value-num  {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.625rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .value-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 3px; }
+    .value-desc  { font-size: 0.7rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Section layout ── */
+    section { padding: 5rem 2.5rem; max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.875rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── Tiers ── */
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .tier-card {
+      padding: 2rem 1.75rem;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .tier-card:last-child { border-right: none; }
+    .tier-card.popular { background: var(--surface2); }
+
+    .tier-eyebrow {
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .popular-badge {
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      border: 1px solid rgba(232,68,10,0.35);
+      padding: 2px 7px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+
+    .tier-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.625rem;
+    }
+
+    .tier-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tier-price {
+      margin-bottom: 1.5rem;
+    }
+
+    .price-num {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    .price-placeholder {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .tier-perks {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      flex: 1;
+      margin-bottom: 1.75rem;
+    }
+
+    .tier-perks li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tier-perks li::before {
+      content: '→';
+      color: var(--accent);
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      margin-top: 1px;
+    }
+
+    .tier-btn {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 3px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+    }
+    .tier-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+    .tier-btn.highlighted {
+      background: var(--text);
+      border-color: var(--text);
+      color: var(--bg);
+    }
+    .tier-btn.highlighted:hover { opacity: 0.85; }
+
+    /* ── Signup form ── */
+    .form-wrap {
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .form-card {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .form-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .form-title { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+    .form-body {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      padding: 0.7rem 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .field input:focus,
+    .field select:focus { border-color: rgba(255,255,255,0.35); }
+    .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.875rem center; padding-right: 2rem; }
+    .field select option { background: #111; color: #fff; }
+
+    .form-disclaimer {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--surface2);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--text);
+      border: none;
+      color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 0.9rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .form-error {
+      font-size: 0.78rem;
+      color: var(--accent);
+      display: none;
+    }
+
+    .form-success {
+      padding: 3rem 1.75rem;
+      text-align: center;
+      display: none;
+    }
+    .form-success .check { font-size: 2.25rem; margin-bottom: 1rem; }
+    .form-success h3 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+    .form-success p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--text); }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      nav     { padding: 0 1.25rem; }
+      section { padding: 4rem 1.25rem; }
+      .tiers-grid { grid-template-columns: 1fr; }
+      .tier-card  { border-right: none; border-bottom: 1px solid var(--border); }
+      .tier-card:last-child { border-bottom: none; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title { font-size: 2.25rem; }
+      .nav-links a:not(.nav-cta) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <span class="nav-logo" id="shopNameNav">Your Shop</span>
+  <div class="nav-links">
+    <a href="#tiers">Plans</a>
+    <a href="#join">Join</a>
+    <a href="#join" class="nav-cta">Join Now</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-eyebrow">Auto Membership Program</div>
+
+  <h1 class="hero-title">
+    One breakdown costs more<br>than <em>a year of this.</em>
+  </h1>
+
+  <p class="hero-sub" id="heroSub">
+    Tow trucks. Emergency fees. Hours in a waiting room.
+    <span id="shopNameHero">Your mechanic</span>'s membership stops all of it — starting at $30/mo.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#join" class="btn-primary">Claim your spot <span class="arr">→</span></a>
+    <a href="#tiers" class="btn-ghost">See what's included ↓</a>
+  </div>
+</div>
+
+<!-- ── Value strip ── -->
+<div class="value-strip">
+  <div class="value-item">
+    <div class="value-num">01</div>
+    <div class="value-label">Catch It Early</div>
+    <div class="value-desc">Catch a $200 problem before it becomes a $2,000 one</div>
+  </div>
+  <div class="value-item">
+    <div class="value-num">02</div>
+    <div class="value-label">We Come to You</div>
+    <div class="value-desc">No trip fee. No waiting room. We show up at your home or office</div>
+  </div>
+  <div class="value-item">
+    <div class="value-num">03</div>
+    <div class="value-label">Skip the Line</div>
+    <div class="value-desc">Members move ahead of walk-ins, every time</div>
+  </div>
+  <div class="value-item">
+    <div class="value-num">04</div>
+    <div class="value-label">Up to 50% Off Labor</div>
+    <div class="value-desc">Most members save more than their fee on the first repair</div>
+  </div>
+</div>
+
+<!-- ── Pain section ── -->
+<section style="padding-bottom: 0;">
+  <div class="section-label">Why It Matters</div>
+  <h2 class="section-title">Most car problems don't announce themselves.</h2>
+  <p class="section-sub">Until you're stranded, overcharged, or stuck trusting a shop that's never seen your car.</p>
+
+  <div class="tiers-grid" style="margin-bottom: 0;">
+    <div class="tier-card">
+      <div class="tier-name" style="font-size:1rem; margin-bottom: 0.5rem;">The $800 surprise repair</div>
+      <p style="font-size:0.82rem; color: var(--muted); line-height:1.65;">
+        Members catch warning signs weeks early — during a routine diagnostic that's already included.
+      </p>
+    </div>
+    <div class="tier-card popular">
+      <div class="tier-name" style="font-size:1rem; margin-bottom: 0.5rem;">Three hours in a waiting room</div>
+      <p style="font-size:0.82rem; color: var(--muted); line-height:1.65;">
+        We come to you. And if you need a shop visit, you're first in — not behind whoever walked in that morning.
+      </p>
+    </div>
+    <div class="tier-card">
+      <div class="tier-name" style="font-size:1rem; margin-bottom: 0.5rem;">A mechanic who doesn't know you</div>
+      <p style="font-size:0.82rem; color: var(--muted); line-height:1.65;">
+        Your mechanic knows your car's history, your schedule, and what to watch for — not just today's error code.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Tiers ── -->
+<section id="tiers">
+  <div class="section-label">Membership Plans</div>
+  <h2 class="section-title">Pick your level of protection.</h2>
+  <p class="section-sub">Every plan keeps your car ahead of the next breakdown.</p>
+
+  <div class="tiers-grid">
+
+    <!-- Tier 01 -->
+    <div class="tier-card">
+      <div class="tier-eyebrow">Tier 01</div>
+      <div class="tier-name">Diagnostic Member</div>
+      <div class="tier-desc">Full visibility, proactive monitoring, and perks that keep your vehicle healthy year-round.</div>
+      <div class="tier-price">
+        <span class="price-num" id="price1">$30</span>
+        <span class="price-placeholder">/ month · billed monthly</span>
+      </div>
+      <ul class="tier-perks">
+        <li>Monthly complete vehicle diagnostic — included</li>
+        <li>Digital health report after every visit</li>
+        <li>OBD-II device included — real-time engine monitoring, flags issues before they strand you</li>
+        <li>Monthly automated vehicle health SMS — service reminders and status to your phone</li>
+        <li>Priority scheduling ahead of all walk-ins</li>
+        <li>Emergency mechanic line — direct text or call between visits</li>
+        <li>Free fluid top-off and tire pressure check — drop-in, no appointment needed</li>
+        <li>One complimentary car wash per month through our partner network</li>
+      </ul>
+      <button class="tier-btn" onclick="selectTier('Diagnostic Member')">Get Started →</button>
+    </div>
+
+    <!-- Tier 02 -->
+    <div class="tier-card popular">
+      <div class="tier-eyebrow">Tier 02 <span class="popular-badge">Most Popular</span></div>
+      <div class="tier-name">Mobile Member</div>
+      <div class="tier-desc">You come to them. No trip fee. They never have to leave home.</div>
+      <div class="tier-price">
+        <span class="price-num" id="price2">$50</span>
+        <span class="price-placeholder">/ month · billed monthly</span>
+      </div>
+      <ul class="tier-perks">
+        <li>Everything in Tier 1</li>
+        <li>Mobile mechanic at your location</li>
+        <li>No travel fee within service radius</li>
+        <li>Priority same-day appointments</li>
+      </ul>
+      <button class="tier-btn highlighted" onclick="selectTier('Mobile Member')">Get Started →</button>
+    </div>
+
+    <!-- Tier 03 -->
+    <div class="tier-card">
+      <div class="tier-eyebrow">Tier 03</div>
+      <div class="tier-name">All-In Member</div>
+      <div class="tier-desc">50% off labor on all routine work. The most loyal customers, locked in.</div>
+      <div class="tier-price">
+        <span class="price-num" id="price3">$90</span>
+        <span class="price-placeholder">/ month · billed monthly</span>
+      </div>
+      <ul class="tier-perks">
+        <li>Everything in Tier 1 &amp; 2</li>
+        <li>50% off labor — maintenance &amp; routine work</li>
+        <li>Up to $200 labor discount on major repairs</li>
+        <li>Direct mechanic contact line</li>
+        <li>Annual full inspection included</li>
+      </ul>
+      <button class="tier-btn" onclick="selectTier('All-In Member')">Get Started →</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Join form ── -->
+<section id="join" style="padding-top: 0;">
+  <div class="form-wrap">
+    <div class="section-label" style="text-align:center; margin-bottom: 0.75rem;">Lock In Your Rate</div>
+    <h2 class="section-title" style="text-align:center; margin-bottom: 0.5rem;">Spots are limited per area.</h2>
+    <p class="section-sub" style="text-align:center; margin: 0 auto 2rem;">
+      Drop your info and we'll reach out within 24 hours.
+    </p>
+
+    <div class="form-card">
+      <div class="form-header">
+        <div class="form-dot"></div>
+        <span class="form-title">Membership Application</span>
+      </div>
+
+      <!-- Form state -->
+      <div class="form-body" id="formBody">
+        <div class="form-row">
+          <div class="field">
+            <label>First &amp; Last Name</label>
+            <input type="text" id="memberName" placeholder="John Smith" />
+          </div>
+          <div class="field">
+            <label>Phone Number</label>
+            <input type="tel" id="memberPhone" placeholder="+1 (555) 000-0000" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Select Your Plan</label>
+          <select id="memberTier">
+            <option value="" disabled selected>Choose a membership tier…</option>
+            <option value="Diagnostic Member">Tier 01 — Diagnostic Member</option>
+            <option value="Mobile Member">Tier 02 — Mobile Member (Most Popular)</option>
+            <option value="All-In Member">Tier 03 — All-In Member</option>
+          </select>
+        </div>
+        <div class="form-disclaimer">
+          By submitting, you agree to be contacted by <span id="disclaimerShop">your mechanic</span> about your membership.
+          Message and data rates may apply. No payment is collected at this step.
+        </div>
+        <div class="form-error" id="formError"></div>
+        <button class="submit-btn" id="submitBtn">Claim My Spot →</button>
+      </div>
+
+      <!-- Success state -->
+      <div class="form-success" id="formSuccess">
+        <div class="check">✓</div>
+        <h3>You're on the list!</h3>
+        <p id="successMsg">We've got your info. Your mechanic will reach out within 24 hours to get your membership set up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <span id="footerShop">Your Shop</span>
+  <a href="https://www.auagency.org" target="_blank">Powered by AU Agency</a>
+</footer>
+
+<script>
+  // ─────────────────────────────────────────────
+  // MECHANIC: Set your shop name here
+  // ─────────────────────────────────────────────
+  const SHOP_NAME = localStorage.getItem('mechanic_shop_name') || 'Your Shop';
+
+  // Apply shop name across page
+  document.getElementById('shopNameNav').textContent     = SHOP_NAME;
+  document.getElementById('shopNameHero').textContent    = SHOP_NAME;
+  document.getElementById('disclaimerShop').textContent  = SHOP_NAME;
+  document.getElementById('footerShop').textContent      = SHOP_NAME;
+  document.title = SHOP_NAME + ' — Membership';
+
+  // ─────────────────────────────────────────────
+  // Tier button → pre-select in form & scroll
+  // ─────────────────────────────────────────────
+  function selectTier(tierName) {
+    document.getElementById('memberTier').value = tierName;
+    document.getElementById('join').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ─────────────────────────────────────────────
+  // Form submit
+  // ─────────────────────────────────────────────
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const name  = document.getElementById('memberName').value.trim();
+    const phone = document.getElementById('memberPhone').value.trim();
+    const tier  = document.getElementById('memberTier').value;
+    const errEl = document.getElementById('formError');
+
+    errEl.style.display = 'none';
+
+    if (!name)  { errEl.textContent = 'Please enter your name.';  errEl.style.display = 'block'; return; }
+    if (!phone) { errEl.textContent = 'Please enter your phone number.'; errEl.style.display = 'block'; return; }
+    if (!tier)  { errEl.textContent = 'Please select a membership plan.'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled    = true;
+    btn.textContent = 'Submitting…';
+
+    try {
+      const res  = await fetch('/api/join-membership', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ name, phone, tier, shop_name: SHOP_NAME }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        document.getElementById('formBody').style.display    = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+        document.getElementById('successMsg').textContent    =
+          `We've got your info. ${SHOP_NAME} will reach out within 24 hours to get your membership started.`;
+      } else {
+        throw new Error(data.error || 'Something went wrong.');
+      }
+    } catch (e) {
+      errEl.textContent   = e.message || 'Could not submit. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled        = false;
+      btn.textContent     = 'Claim My Spot →';
+    }
+  });
+</script>
+</body>
+</html>

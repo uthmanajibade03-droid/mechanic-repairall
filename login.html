@@ -3,263 +3,219 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RepairAll Auto LLC — Login</title>
+  <title>Mechanic Portal — Login</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #0e0e0e;
-      --surface: #161616;
-      --surface2: #1f1f1f;
-      --border: #2a2a2a;
-      --accent: #e8440a;
-      --accent-dim: rgba(232, 68, 10, 0.12);
-      --text: #f0ece6;
-      --muted: #6b6560;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #000;
+      --text:    #fff;
+      --muted:   rgba(255,255,255,0.42);
+      --border:  rgba(255,255,255,0.13);
+      --surface: rgba(255,255,255,0.03);
+      --accent:  #e8440a;
+    }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 1.5rem;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
-    }
-
-    .login-wrap {
-      width: 100%;
-      max-width: 400px;
-      position: relative;
-      z-index: 1;
-      animation: fadeUp 0.4s ease both;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .logo {
+    /* ── Logo ── */
+    .logo-wrap {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 2.5rem;
     }
 
-    .logo-main {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px;
-      letter-spacing: 3px;
-      color: var(--text);
+    .logo-name {
       display: block;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 5px;
     }
 
     .logo-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--accent);
-      letter-spacing: 4px;
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-top: 6px;
-      display: block;
     }
 
+    /* ── Card ── */
     .card {
-      background: var(--surface);
+      width: 100%;
+      max-width: 360px;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 4px;
+      background: var(--surface);
       overflow: hidden;
     }
 
     .card-header {
-      padding: 22px 28px;
+      padding: 1rem 1.625rem;
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-header .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-
-    .card-header h2 {
-      font-size: 11px;
-      letter-spacing: 3px;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      font-weight: 600;
       color: var(--muted);
-      font-family: 'DM Mono', monospace;
+      font-weight: 600;
     }
 
     .card-body {
-      padding: 28px;
+      padding: 1.625rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .field {
-      margin-bottom: 18px;
-    }
-
-    label {
+    .field label {
       display: block;
-      font-size: 10px;
-      letter-spacing: 2px;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
       font-weight: 600;
-      margin-bottom: 8px;
-      font-family: 'DM Mono', monospace;
+      margin-bottom: 0.45rem;
     }
 
-    input {
+    .field input {
       width: 100%;
-      background: var(--surface2);
+      background: transparent;
       border: 1px solid var(--border);
       border-radius: 3px;
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      padding: 12px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.7rem 0.875rem;
       outline: none;
       transition: border-color 0.2s;
     }
 
-    input:focus { border-color: var(--accent); }
+    .field input:focus { border-color: rgba(255,255,255,0.35); }
 
     .login-btn {
       width: 100%;
-      background: var(--accent);
+      background: var(--text);
       border: none;
-      color: #fff;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px;
-      letter-spacing: 3px;
-      padding: 15px;
+      color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.85rem;
       border-radius: 3px;
       cursor: pointer;
-      margin-top: 8px;
-      transition: all 0.2s;
+      transition: opacity 0.2s;
+      margin-top: 0.25rem;
     }
 
-    .login-btn:hover { background: #d03a08; }
-    .login-btn:active { transform: scale(0.99); }
-    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-btn:hover { opacity: 0.85; }
+    .login-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
     .error-msg {
-      background: rgba(232,68,10,0.1);
-      border: 1px solid rgba(232,68,10,0.3);
-      color: #f07050;
-      font-size: 13px;
-      padding: 10px 14px;
-      border-radius: 3px;
-      margin-top: 14px;
-      display: none;
-      font-family: 'DM Mono', monospace;
-      letter-spacing: 0.5px;
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-align: center;
+      min-height: 1.1rem;
+      letter-spacing: 0.01em;
     }
 
+    /* ── Footer ── */
     .footer-note {
-      text-align: center;
-      margin-top: 24px;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      margin-top: 2rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       color: var(--muted);
-      letter-spacing: 1px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-<div class="login-wrap">
-  <div class="logo">
-    <span class="logo-main">RepairAll Auto LLC</span>
-    <span class="logo-tag">Mechanic Portal</span>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="dot"></div>
-      <h2>Sign In</h2>
-    </div>
-    <div class="card-body">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="you@repairall.com" />
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••••" />
-      </div>
-      <button class="login-btn" id="loginBtn" onclick="handleLogin()">Sign In</button>
-      <div class="error-msg" id="errorMsg"></div>
-    </div>
-  </div>
-
-  <div class="footer-note">RepairAll Auto LLC · Staff Access Only</div>
+<div class="logo-wrap">
+  <span class="logo-name" id="shopNameHeader">Your Shop</span>
+  <span class="logo-tag">Mechanic Portal</span>
 </div>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+<div class="card">
+  <div class="card-header">Sign In</div>
+  <div class="card-body">
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" id="loginBtn">Sign In</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+</div>
 
-  const supabase = createClient(
-    'https://kvxwjpsunapmutrpgjrp.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2eHdqcHN1bmFwbXV0cnBnanJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3ODcxMTksImV4cCI6MjA5MDM2MzExOX0.U8XzwR7kh5pJ8_Pq16lxuTp5wrAwA7BmXLIwpE-ZzhY'
-  );
+<div class="footer-note" id="footerNote">Staff Access Only</div>
 
-  // If already logged in, go straight to dashboard
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) window.location.href = '/mechanic.html';
+<script>
+  // Restore shop name from localStorage (set by mechanic after first login)
+  const savedShop = localStorage.getItem('mechanic_shop_name');
+  if (savedShop) {
+    document.getElementById('shopNameHeader').textContent = savedShop;
+    document.getElementById('footerNote').textContent = savedShop + ' · Staff Access Only';
+    document.title = savedShop + ' — Login';
+  }
 
-  window.handleLogin = async function() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const btn = document.getElementById('loginBtn');
-    const err = document.getElementById('errorMsg');
+  // If already authenticated, skip login
+  if (localStorage.getItem('mechanic_session') === 'authenticated') {
+    window.location.href = '/dashboard';
+  }
 
-    if (!email || !password) {
-      err.textContent = 'Please enter your email and password.';
-      err.style.display = 'block';
-      return;
-    }
+  const btn      = document.getElementById('loginBtn');
+  const pwInput  = document.getElementById('password');
+  const errorMsg = document.getElementById('errorMsg');
 
-    btn.disabled = true;
-    btn.textContent = 'Signing In…';
-    err.style.display = 'none';
+  async function handleLogin() {
+    const pw = pwInput.value.trim();
+    if (!pw) { errorMsg.textContent = 'Enter your password.'; return; }
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    btn.disabled    = true;
+    btn.textContent = 'Signing in…';
+    errorMsg.textContent = '';
 
-    if (error) {
-      err.textContent = error.message;
-      err.style.display = 'block';
-      btn.disabled = false;
+    try {
+      const res  = await fetch('/api/auth', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ password: pw }),
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        localStorage.setItem('mechanic_session', 'authenticated');
+        window.location.href = '/dashboard';
+      } else {
+        errorMsg.textContent = data.error || 'Incorrect password.';
+        btn.disabled    = false;
+        btn.textContent = 'Sign In';
+      }
+    } catch {
+      errorMsg.textContent = 'Connection error — try again.';
+      btn.disabled    = false;
       btn.textContent = 'Sign In';
-      return;
     }
+  }
 
-    window.location.href = '/mechanic.html';
-  };
-
-  // Allow Enter key to submit
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') handleLogin();
-  });
+  btn.addEventListener('click', handleLogin);
+  pwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
 </script>
 </body>
 </html>
