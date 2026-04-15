@@ -45,6 +45,18 @@ async function sendSMS({ contactId, message }) {
   return data;
 }
 
+// Update custom fields on a contact
+async function updateContact(contactId, fields) {
+  const res = await fetch(`${GHL_API}/contacts/${contactId}`, {
+    method:  'PUT',
+    headers: headers(),
+    body: JSON.stringify({ customFields: fields }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'GHL updateContact error');
+  return data;
+}
+
 // Add a tag to a contact
 async function addTag(contactId, tag) {
   const res = await fetch(`${GHL_API}/contacts/${contactId}/tags`, {
@@ -69,4 +81,4 @@ async function removeTag(contactId, tag) {
   return data;
 }
 
-module.exports = { upsertContact, sendSMS, addTag, removeTag };
+module.exports = { upsertContact, updateContact, sendSMS, addTag, removeTag };
