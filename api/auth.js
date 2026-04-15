@@ -10,6 +10,9 @@ module.exports = async (req, res) => {
   const correct = process.env.MECHANIC_PASSWORD;
 
   if (!correct) return res.status(500).json({ ok: false, error: 'MECHANIC_PASSWORD env variable not set.' });
-  if (password === correct) return res.status(200).json({ ok: true });
+  if (password === correct) return res.status(200).json({
+    ok:       true,
+    shopName: process.env.SHOP_NAME || 'RepairAll Auto LLC',
+  });
   return res.status(401).json({ ok: false, error: 'Incorrect password.' });
 };

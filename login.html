@@ -201,6 +201,7 @@
 
       if (data.ok) {
         localStorage.setItem('mechanic_session', 'authenticated');
+        if (data.shopName) localStorage.setItem('mechanic_shop_name', data.shopName);
         window.location.href = '/dashboard';
       } else {
         errorMsg.textContent = data.error || 'Incorrect password.';
