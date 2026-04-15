@@ -368,7 +368,7 @@
     }
     .tier-btn.highlighted:hover { opacity: 0.85; }
 
-    /* ── Signup form ── */
+    /* ── Checkout form ── */
     .form-wrap {
       max-width: 540px;
       margin: 0 auto;
@@ -386,10 +386,29 @@
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
     }
+    .form-header-left { display: flex; align-items: center; gap: 8px; }
     .form-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
     .form-title { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+    /* Step indicator */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .step-pip {
+      width: 18px; height: 3px; border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .step-pip.active { background: var(--accent); }
 
     .form-body {
       padding: 1.75rem;
@@ -430,11 +449,45 @@
     .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.875rem center; padding-right: 2rem; }
     .field select option { background: #111; color: #fff; }
 
+    /* Selected tier chip shown in step 2 */
+    .tier-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.5rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--surface2);
+      color: var(--muted);
+    }
+    .tier-chip strong { color: var(--text); }
+    .tier-chip-change {
+      font-size: 0.6rem;
+      color: var(--accent);
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-left: auto;
+      text-decoration: none;
+    }
+    .tier-chip-change:hover { opacity: 0.75; }
+
+    /* Stripe Payment Element container */
+    #payment-element-wrap {
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1rem;
+      background: var(--surface2);
+    }
+
     .form-disclaimer {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: var(--muted);
       line-height: 1.6;
-      padding: 0.875rem 1rem;
+      padding: 0.75rem 1rem;
       border: 1px solid var(--border);
       border-radius: 3px;
       background: var(--surface2);
@@ -462,7 +515,12 @@
       font-size: 0.78rem;
       color: var(--accent);
       display: none;
+      padding: 0.5rem 0;
     }
+
+    /* Step panels */
+    #step-info    { display: flex; flex-direction: column; gap: 1rem; }
+    #step-payment { display: none; flex-direction: column; gap: 1rem; }
 
     .form-success {
       padding: 3rem 1.75rem;
@@ -659,55 +717,82 @@
   </div>
 </section>
 
-<!-- ── Join form ── -->
+<!-- ── Join / Checkout ── -->
 <section id="join" style="padding-top: 0;">
   <div class="form-wrap">
     <div class="section-label" style="text-align:center; margin-bottom: 0.75rem;">Lock In Your Rate</div>
     <h2 class="section-title" style="text-align:center; margin-bottom: 0.5rem;">Spots are limited per area.</h2>
     <p class="section-sub" style="text-align:center; margin: 0 auto 2rem;">
-      Drop your info and we'll reach out within 24 hours.
+      Choose a plan above and complete checkout in under 60 seconds.
     </p>
 
     <div class="form-card">
       <div class="form-header">
-        <div class="form-dot"></div>
-        <span class="form-title">Membership Application</span>
+        <div class="form-header-left">
+          <div class="form-dot"></div>
+          <span class="form-title" id="formTitle">Your Info</span>
+        </div>
+        <div class="step-indicator">
+          <div class="step-pip active" id="pip1"></div>
+          <div class="step-pip" id="pip2"></div>
+        </div>
       </div>
 
-      <!-- Form state -->
+      <!-- ── Step 1: Info ── -->
       <div class="form-body" id="formBody">
-        <div class="form-row">
-          <div class="field">
-            <label>First &amp; Last Name</label>
-            <input type="text" id="memberName" placeholder="John Smith" />
+        <div id="step-info">
+          <div class="form-row">
+            <div class="field">
+              <label>First &amp; Last Name</label>
+              <input type="text" id="memberName" placeholder="John Smith" />
+            </div>
+            <div class="field">
+              <label>Phone Number</label>
+              <input type="tel" id="memberPhone" placeholder="(555) 000-0000" />
+            </div>
           </div>
           <div class="field">
-            <label>Phone Number</label>
-            <input type="tel" id="memberPhone" placeholder="+1 (555) 000-0000" />
+            <label>Select Your Plan</label>
+            <select id="memberTier">
+              <option value="" disabled selected>Choose a membership tier…</option>
+              <option value="Diagnostic Member">Tier 01 — Diagnostic Member · $30/mo</option>
+              <option value="Mobile Member">Tier 02 — Mobile Member · $50/mo</option>
+              <option value="All-In Member">Tier 03 — All-In Member · $90/mo</option>
+            </select>
           </div>
+          <div class="form-disclaimer">
+            By continuing, you agree to be contacted by <span id="disclaimerShop">your mechanic</span>.
+            Your info is saved at this step — we'll follow up if you don't complete checkout.
+            Message and data rates may apply.
+          </div>
+          <div class="form-error" id="infoError"></div>
+          <button class="submit-btn" id="nextBtn">Continue to Payment →</button>
         </div>
-        <div class="field">
-          <label>Select Your Plan</label>
-          <select id="memberTier">
-            <option value="" disabled selected>Choose a membership tier…</option>
-            <option value="Diagnostic Member">Tier 01 — Diagnostic Member</option>
-            <option value="Mobile Member">Tier 02 — Mobile Member (Most Popular)</option>
-            <option value="All-In Member">Tier 03 — All-In Member</option>
-          </select>
+
+        <!-- ── Step 2: Payment ── -->
+        <div id="step-payment">
+          <div class="tier-chip">
+            <span>Plan:</span>
+            <strong id="chipTierName">—</strong>
+            <span id="chipTierPrice" style="color:var(--accent);"></span>
+            <a class="tier-chip-change" id="changePlanLink">Change</a>
+          </div>
+          <div id="payment-element-wrap">
+            <div id="payment-element"><!-- Stripe mounts here --></div>
+          </div>
+          <div class="form-disclaimer">
+            Billed monthly. Cancel anytime. Secured by Stripe — we never store your card details.
+          </div>
+          <div class="form-error" id="payError"></div>
+          <button class="submit-btn" id="payBtn">Complete Membership →</button>
         </div>
-        <div class="form-disclaimer">
-          By submitting, you agree to be contacted by <span id="disclaimerShop">your mechanic</span> about your membership.
-          Message and data rates may apply. No payment is collected at this step.
-        </div>
-        <div class="form-error" id="formError"></div>
-        <button class="submit-btn" id="submitBtn">Claim My Spot →</button>
       </div>
 
-      <!-- Success state -->
+      <!-- ── Success ── -->
       <div class="form-success" id="formSuccess">
         <div class="check">✓</div>
-        <h3>You're on the list!</h3>
-        <p id="successMsg">We've got your info. Your mechanic will reach out within 24 hours to get your membership set up.</p>
+        <h3>Welcome aboard!</h3>
+        <p id="successMsg">Your membership is active. Check your phone — we just sent you a welcome text.</p>
       </div>
     </div>
   </div>
@@ -719,17 +804,16 @@
   <a href="https://www.auagency.org" target="_blank">Powered by AU Agency</a>
 </footer>
 
+<script src="https://js.stripe.com/v3/"></script>
 <script>
   // ─────────────────────────────────────────────
-  // MECHANIC: Set your shop name here
+  // Shop name
   // ─────────────────────────────────────────────
-  const SHOP_NAME = localStorage.getItem('mechanic_shop_name') || 'Your Shop';
-
-  // Apply shop name across page
-  document.getElementById('shopNameNav').textContent     = SHOP_NAME;
-  document.getElementById('shopNameHero').textContent    = SHOP_NAME;
-  document.getElementById('disclaimerShop').textContent  = SHOP_NAME;
-  document.getElementById('footerShop').textContent      = SHOP_NAME;
+  const SHOP_NAME = localStorage.getItem('mechanic_shop_name') || 'RepairAll Auto LLC';
+  document.getElementById('shopNameNav').textContent    = SHOP_NAME;
+  document.getElementById('shopNameHero').textContent   = SHOP_NAME;
+  document.getElementById('disclaimerShop').textContent = SHOP_NAME;
+  document.getElementById('footerShop').textContent     = SHOP_NAME;
   document.title = SHOP_NAME + ' — Membership';
 
   // ─────────────────────────────────────────────
@@ -741,48 +825,164 @@
   }
 
   // ─────────────────────────────────────────────
-  // Form submit
+  // Tier price map (display only)
   // ─────────────────────────────────────────────
-  document.getElementById('submitBtn').addEventListener('click', async () => {
+  const TIER_PRICES = {
+    'Diagnostic Member': '$30/mo',
+    'Mobile Member':     '$50/mo',
+    'All-In Member':     '$90/mo',
+  };
+
+  // ─────────────────────────────────────────────
+  // State
+  // ─────────────────────────────────────────────
+  let stripeInstance   = null;
+  let stripeElements   = null;
+  let checkoutState    = {};   // { name, phone, tier, customerId, subscriptionId, ghlContactId }
+
+  // ─────────────────────────────────────────────
+  // Show/hide steps
+  // ─────────────────────────────────────────────
+  function showStep(step) {
+    document.getElementById('step-info').style.display    = step === 1 ? 'flex' : 'none';
+    document.getElementById('step-payment').style.display = step === 2 ? 'flex' : 'none';
+    document.getElementById('pip1').classList.toggle('active', step >= 1);
+    document.getElementById('pip2').classList.toggle('active', step >= 2);
+    document.getElementById('formTitle').textContent = step === 1 ? 'Your Info' : 'Payment';
+  }
+
+  function showError(elId, msg) {
+    const el = document.getElementById(elId);
+    el.textContent   = msg;
+    el.style.display = 'block';
+  }
+  function hideError(elId) {
+    document.getElementById(elId).style.display = 'none';
+  }
+
+  // ─────────────────────────────────────────────
+  // Step 1: "Continue to Payment" click
+  // ─────────────────────────────────────────────
+  document.getElementById('nextBtn').addEventListener('click', async () => {
+    hideError('infoError');
+
     const name  = document.getElementById('memberName').value.trim();
     const phone = document.getElementById('memberPhone').value.trim();
     const tier  = document.getElementById('memberTier').value;
-    const errEl = document.getElementById('formError');
 
-    errEl.style.display = 'none';
+    if (!name)  return showError('infoError', 'Please enter your name.');
+    if (!phone) return showError('infoError', 'Please enter your phone number.');
+    if (!tier)  return showError('infoError', 'Please select a membership plan.');
 
-    if (!name)  { errEl.textContent = 'Please enter your name.';  errEl.style.display = 'block'; return; }
-    if (!phone) { errEl.textContent = 'Please enter your phone number.'; errEl.style.display = 'block'; return; }
-    if (!tier)  { errEl.textContent = 'Please select a membership plan.'; errEl.style.display = 'block'; return; }
-
-    const btn = document.getElementById('submitBtn');
+    const btn = document.getElementById('nextBtn');
     btn.disabled    = true;
-    btn.textContent = 'Submitting…';
+    btn.textContent = 'Setting up…';
 
     try {
-      const res  = await fetch('/api/join-membership', {
+      const res  = await fetch('/api/begin-membership', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name, phone, tier, shop_name: SHOP_NAME }),
+        body:    JSON.stringify({ name, phone, tier }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Could not start checkout.');
+
+      // Save state
+      checkoutState = { name, phone, tier,
+        customerId:     data.customerId,
+        subscriptionId: data.subscriptionId,
+        ghlContactId:   data.ghlContactId,
+      };
+
+      // Update tier chip
+      document.getElementById('chipTierName').textContent  = tier;
+      document.getElementById('chipTierPrice').textContent = TIER_PRICES[tier] || '';
+
+      // Initialize Stripe Payment Element
+      stripeInstance = Stripe(data.publishableKey);
+      stripeElements = stripeInstance.elements({
+        clientSecret: data.clientSecret,
+        appearance: {
+          theme: 'night',
+          variables: {
+            colorPrimary:    '#e8440a',
+            colorBackground: '#0d0d0d',
+            colorText:       '#ffffff',
+            colorDanger:     '#e8440a',
+            fontFamily:      'Inter, sans-serif',
+            borderRadius:    '3px',
+          },
+        },
       });
 
-      const data = await res.json();
+      const paymentEl = stripeElements.create('payment', { layout: 'tabs' });
+      paymentEl.mount('#payment-element');
 
-      if (res.ok && data.ok) {
-        document.getElementById('formBody').style.display    = 'none';
-        document.getElementById('formSuccess').style.display = 'block';
-        document.getElementById('successMsg').textContent    =
-          `We've got your info. ${SHOP_NAME} will reach out within 24 hours to get your membership started.`;
-      } else {
-        throw new Error(data.error || 'Something went wrong.');
-      }
+      showStep(2);
+
     } catch (e) {
-      errEl.textContent   = e.message || 'Could not submit. Please try again.';
-      errEl.style.display = 'block';
-      btn.disabled        = false;
-      btn.textContent     = 'Claim My Spot →';
+      showError('infoError', e.message || 'Something went wrong. Please try again.');
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Continue to Payment →';
     }
   });
+
+  // ─────────────────────────────────────────────
+  // "Change plan" link → go back to step 1
+  // ─────────────────────────────────────────────
+  document.getElementById('changePlanLink').addEventListener('click', () => {
+    showStep(1);
+    // Clear payment element so a fresh one mounts next time
+    stripeElements = null;
+    document.getElementById('payment-element').innerHTML = '';
+  });
+
+  // ─────────────────────────────────────────────
+  // Step 2: "Complete Membership" click
+  // ─────────────────────────────────────────────
+  document.getElementById('payBtn').addEventListener('click', async () => {
+    hideError('payError');
+    const btn = document.getElementById('payBtn');
+    btn.disabled    = true;
+    btn.textContent = 'Processing…';
+
+    try {
+      // Confirm payment with Stripe (stay on page)
+      const { error } = await stripeInstance.confirmPayment({
+        elements: stripeElements,
+        redirect: 'if_required',
+        confirmParams: {
+          return_url: window.location.href,
+        },
+      });
+
+      if (error) throw new Error(error.message);
+
+      // Payment confirmed — activate the member server-side
+      const res  = await fetch('/api/complete-membership', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...checkoutState, shop_name: SHOP_NAME }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Activation failed.');
+
+      // Show success
+      document.getElementById('formBody').style.display    = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+      document.getElementById('successMsg').textContent    =
+        `Your ${checkoutState.tier} is now active. Check your phone — we just sent you a welcome text.`;
+
+    } catch (e) {
+      showError('payError', e.message || 'Payment failed. Please try again.');
+      btn.disabled    = false;
+      btn.textContent = 'Complete Membership →';
+    }
+  });
+
+  // Initialize at step 1
+  showStep(1);
 </script>
 </body>
 </html>

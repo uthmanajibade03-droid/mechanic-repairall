@@ -45,4 +45,28 @@ async function sendSMS({ contactId, message }) {
   return data;
 }
 
-module.exports = { upsertContact, sendSMS };
+// Add a tag to a contact
+async function addTag(contactId, tag) {
+  const res = await fetch(`${GHL_API}/contacts/${contactId}/tags`, {
+    method:  'POST',
+    headers: headers(),
+    body: JSON.stringify({ tags: [tag] }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'GHL addTag error');
+  return data;
+}
+
+// Remove a tag from a contact
+async function removeTag(contactId, tag) {
+  const res = await fetch(`${GHL_API}/contacts/${contactId}/tags`, {
+    method:  'DELETE',
+    headers: headers(),
+    body: JSON.stringify({ tags: [tag] }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'GHL removeTag error');
+  return data;
+}
+
+module.exports = { upsertContact, sendSMS, addTag, removeTag };
