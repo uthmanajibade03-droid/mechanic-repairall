@@ -1,81 +1,66 @@
-# RepairAll Auto LLC — Payment System
+# RepairAll Auto LLC — Invoice & Membership System
 
-## Files
-- `mechanic.html` — Dashboard to create & manage invoices
-- `customer.html` — Customer-facing payment page (accessed via unique link)
-- `schema.sql` — Supabase database setup
+Deployed on **Vercel** at `https://www.repairall.llc`
 
 ---
 
-## Setup (5 steps)
+## Pages
 
-### 1. Create the Supabase table
-1. Go to: https://supabase.com/dashboard/project/kvxwjpsunapmutrpgjrp/sql
-2. Paste the contents of `schema.sql` and click **Run**
+| URL | File | Who uses it |
+|-----|------|-------------|
+| `/dashboard` | `mechanic.html` | Mechanic — create invoices |
+| `/customer?id=INV-XXXXX` | `customer.html` | Customer — view invoice & pay |
+| `/login` | `login.html` | Mechanic login |
+| `/` | `index.html` | Membership landing page |
 
-### 2. Deploy the files
-Upload `mechanic.html` and `customer.html` to any static host:
-- **Netlify** (drag & drop): https://netlify.com/drop
-- **Vercel**: `npx vercel`
-- **GitHub Pages**: push to a repo and enable Pages
+---
 
-### 3. Wire up the backend for payments
-Stripe requires a backend to create PaymentIntents (to keep your secret key safe).
+## API Routes (`/api/`)
 
-**Minimal Node.js / Express backend:**
-```js
-const stripe = require('stripe')('sk_test_YOUR_SECRET_KEY');
+| Endpoint | Purpose |
+|----------|---------|
+| `auth.js` | Password check for mechanic login |
+| `mechanic-invoices.js` | GET list / POST create invoice (Airtable) |
+| `get-invoice.js` | GET single invoice by ID (Airtable) |
+| `update-invoice.js` | PATCH invoice status (Airtable) |
+| `create-payment-intent.js` | Create Stripe PaymentIntent |
+| `send-invoice-sms.js` | Send payment link to customer via GHL SMS |
+| `send-review-sms.js` | Send Google review request after payment via GHL SMS |
+| `join-membership.js` | Save membership to Airtable + GHL welcome SMS |
+| `ghl.js` | Shared GHL helper (upsertContact, sendSMS) |
 
-app.post('/create-payment-intent', async (req, res) => {
-  const { amount, invoice_id } = req.body;
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount,           // in cents
-    currency: 'usd',
-    metadata: { invoice_id }
-  });
-  res.json({ clientSecret: paymentIntent.client_secret });
-});
-```
+---
 
-Then in `customer.html`, replace:
-```
-YOUR_BACKEND_ENDPOINT/create-payment-intent
-```
-with your actual server URL, e.g.:
-```
-https://repairall-api.railway.app/create-payment-intent
-```
+## Environment Variables (set in Vercel → Project Settings → Environment Variables)
 
-**Easy backend hosting:** Railway, Render, or Vercel Functions
-
-### 4. Handle Stripe webhook (mark invoices as paid)
-In your backend, add a webhook listener for `payment_intent.succeeded`:
-```js
-app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
-  const event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], 'whsec_...');
-  if (event.type === 'payment_intent.succeeded') {
-    const invoiceId = event.data.object.metadata.invoice_id;
-    // Update Supabase: set status = 'paid' for this invoice_id
-  }
-  res.json({received: true});
-});
-```
-
-### 5. Open the mechanic dashboard
-Open `mechanic.html` in a browser. Create an invoice — it auto-copies the payment link. Send the link to your customer!
+| Variable | Description |
+|----------|-------------|
+| `AIRTABLE_API_KEY` | Airtable personal access token |
+| `STRIPE_SECRET_KEY` | Stripe secret key (`sk_live_...`) |
+| `MECHANIC_PASSWORD` | Password to access the mechanic dashboard |
+| `GHL_API_KEY` | GoHighLevel private integration API key |
+| `GHL_LOCATION_ID` | GHL sub-account location ID |
+| `SITE_URL` | `https://www.repairall.llc` |
+| `GOOGLE_REVIEW_LINK` | Google Business review short link |
 
 ---
 
 ## How it works
-1. Mechanic fills in customer name, vehicle, services → clicks **Generate Invoice**
-2. Invoice is saved to Supabase with a unique ID (e.g. `INV-X7K2M9PQ`)
-3. A payment link is auto-copied: `https://yoursite.com/customer.html?id=INV-X7K2M9PQ`
-4. Customer opens the link, sees their itemized invoice, pays via Stripe
-5. Invoice status updates to **Paid** in the dashboard (realtime)
+
+1. Mechanic types a free-form line (e.g. `Ali 8622145237 brake pad $150`) → system parses it → mechanic confirms
+2. Invoice saved to Airtable, customer gets a payment link via SMS
+3. Customer opens the link, pays via Stripe
+4. After payment, customer gets a Google review request via SMS
+5. Membership signups go to Airtable + customer gets a welcome SMS
 
 ---
 
-## Keys already configured
-- Supabase URL: `https://kvxwjpsunapmutrpgjrp.supabase.co`
-- Stripe Publishable Key: `pk_test_51TGJM5QZ...` ✓
-- Supabase Anon Key: wired in ✓
+## Deploy
+
+Push to the `main` branch on GitHub — Vercel auto-deploys.
+
+```bash
+git add .
+git commit -m "your message"
+git push origin main
+```

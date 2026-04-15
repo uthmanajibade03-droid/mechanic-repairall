@@ -766,7 +766,21 @@
 
       const link = `${location.origin}/customer?id=${encodeURIComponent(invoiceId)}`;
       navigator.clipboard.writeText(link).catch(() => {});
-      showToast('Link copied — send it to ' + parsed.name + '!');
+
+      // Fire SMS to customer via GHL (non-blocking)
+      fetch('/api/send-invoice-sms', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:       parsed.name,
+          phone:      parsed.phone,
+          invoice_id: invoiceId,
+          total:      parsed.amount,
+          shop_name:  shopName,
+        }),
+      }).catch(() => {});
+
+      showToast('Invoice sent to ' + parsed.name + ' via SMS!');
 
       // Reset back to input step
       document.getElementById('quickInput').value       = '';

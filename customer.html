@@ -470,9 +470,21 @@
     // Step 2: Handle Stripe redirect return (payment already confirmed)
     if (redirectStatus === 'succeeded' && paymentIntentId) {
       await updateInvoice(recordId, {
-        status:                 'paid',
-        stripe_payment_intent:  paymentIntentId,
+        status:                'paid',
+        stripe_payment_intent: paymentIntentId,
       });
+
+      // Send Google review request via GHL (non-blocking)
+      fetch('/api/send-review-sms', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:      inv.customer_name,
+          phone:     inv.customer_contact,
+          shop_name: inv.shop_name,
+        }),
+      }).catch(() => {});
+
       showPaidScreen(inv);
       return;
     }
