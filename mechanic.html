@@ -751,6 +751,7 @@
 
     try {
       const invoiceId = 'INV-' + Math.random().toString(36).slice(2, 10).toUpperCase();
+      const link = `${location.origin}/customer?id=${encodeURIComponent(invoiceId)}`;
 
       await atPost({
         invoice_id:       invoiceId,
@@ -761,10 +762,9 @@
         total_amount:     parsed.amount,
         shop_name:        shopName,
         status:           'pending',
-        created_at:       new Date().toISOString(),
+        created_at:       new Date().toISOString().split('T')[0],   // YYYY-MM-DD — works with Date and text fields
+        payment_link:     link,
       });
-
-      const link = `${location.origin}/customer?id=${encodeURIComponent(invoiceId)}`;
       navigator.clipboard.writeText(link).catch(() => {});
 
       // Fire SMS to customer via GHL (non-blocking)
@@ -805,7 +805,10 @@
   async function loadInvoices() {
     try {
       const data = await atGet();
-      allInvoices = data.invoices || [];
+      // Sort newest-first client-side (avoids Airtable field-type issues with created_at sort)
+      allInvoices = (data.invoices || []).sort((a, b) =>
+        (b.created_at || '').localeCompare(a.created_at || '')
+      );
       renderInvoices();
     } catch (err) {
       showToast('Could not load invoices.', true);

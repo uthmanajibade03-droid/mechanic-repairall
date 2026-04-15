@@ -15,7 +15,9 @@ module.exports = async (req, res) => {
   try {
     // GET: list all invoices sorted newest first
     if (req.method === 'GET') {
-      const r    = await fetch(`${AT_URL}?sort[0][field]=created_at&sort[0][direction]=desc`, { headers: AT_HDR });
+      // Fetch without Airtable-level sort — avoids field-type errors on created_at.
+      // Client sorts descending by created_at after receiving records.
+      const r    = await fetch(AT_URL, { headers: AT_HDR });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error?.message || 'Airtable error');
 
