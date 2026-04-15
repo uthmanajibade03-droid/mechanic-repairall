@@ -530,7 +530,7 @@
 
 <header>
   <div class="logo">
-    <span class="logo-name" id="shopNameHeader" title="Click to rename">Your Shop</span>
+    <span class="logo-name" id="shopNameHeader">Your Shop</span>
     <span class="logo-tag">Dashboard</span>
   </div>
   <div class="header-right">
@@ -611,23 +611,18 @@
   // so the API key stays server-side and won't trip secret scanning.
   const INVOICES_FN = '/api/mechanic-invoices';
 
-  // ── Shop name ───────────────────────────────────────────────
-  let shopName = localStorage.getItem('mechanic_shop_name') || 'Your Shop';
+  // ── Shop name — fetched from server env (SHOP_NAME), no localStorage ──
+  let shopName = '';
 
   function applyShopName(name) {
     document.getElementById('shopNameHeader').textContent = name;
     document.title = name + ' — Dashboard';
   }
-  applyShopName(shopName);
 
-  document.getElementById('shopNameHeader').addEventListener('click', () => {
-    const n = prompt('Enter your shop name:', shopName);
-    if (!n || !n.trim() || n.trim() === shopName) return;
-    shopName = n.trim();
-    applyShopName(shopName);
-    localStorage.setItem('mechanic_shop_name', shopName);
-    showToast('Shop name updated!');
-  });
+  fetch('/api/config')
+    .then(r => r.json())
+    .then(d => { shopName = d.shopName || 'RepairAll Auto LLC'; applyShopName(shopName); })
+    .catch(() => { shopName = 'RepairAll Auto LLC'; applyShopName(shopName); });
 
   // ── Header date + sign out ──────────────────────────────────
   document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-US', {

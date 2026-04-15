@@ -166,13 +166,17 @@
 <div class="footer-note" id="footerNote">Staff Access Only</div>
 
 <script>
-  // Restore shop name from localStorage (set by mechanic after first login)
-  const savedShop = localStorage.getItem('mechanic_shop_name');
-  if (savedShop) {
-    document.getElementById('shopNameHeader').textContent = savedShop;
-    document.getElementById('footerNote').textContent = savedShop + ' · Staff Access Only';
-    document.title = savedShop + ' — Login';
-  }
+  // Fetch shop name from server — no localStorage
+  fetch('/api/config')
+    .then(r => r.json())
+    .then(d => {
+      const name = d.shopName || '';
+      if (!name) return;
+      document.getElementById('shopNameHeader').textContent = name;
+      document.getElementById('footerNote').textContent = name + ' · Staff Access Only';
+      document.title = name + ' — Login';
+    })
+    .catch(() => {});
 
   // If already authenticated, skip login
   if (localStorage.getItem('mechanic_session') === 'authenticated') {
@@ -201,7 +205,7 @@
 
       if (data.ok) {
         localStorage.setItem('mechanic_session', 'authenticated');
-        if (data.shopName) localStorage.setItem('mechanic_shop_name', data.shopName);
+        // shop name is fetched fresh from /api/config on every page load — no localStorage needed
         window.location.href = '/dashboard';
       } else {
         errorMsg.textContent = data.error || 'Incorrect password.';
