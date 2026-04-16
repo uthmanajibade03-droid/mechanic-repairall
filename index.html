@@ -985,5 +985,39 @@
   // Initialize at step 1
   showStep(1);
 </script>
+  <!-- GHL Chat Widget (themed to match site) -->
+  <style>
+        /* Theme the GHL chat widget to match the site (black / white / #e8440a) */
+        chat-widget {
+                --chat-primary-color: #e8440a;
+                --chat-primary-text-color: #ffffff;
+                --chat-header-bg-color: #000000;
+                --chat-header-text-color: #ffffff;
+                --chat-bg-color: #000000;
+                --chat-text-color: #ffffff;
+                --chat-bubble-bg-color: #e8440a;
+                --chat-bubble-text-color: #ffffff;
+                --lc-primary: #e8440a;
+                --lc-primary-text: #ffffff;
+                --lc-background: #000000;
+                --lc-text: #ffffff;
+                position: fixed;
+                right: 20px;
+                bottom: 20px;
+                z-index: 2147483000;
+        }
+        /* Hide the agent avatar / picture inside the widget */
+        chat-widget img[src*="avatar"],
+        chat-widget img[alt*="avatar" i],
+        chat-widget img[alt*="agent" i],
+        chat-widget [class*="avatar"],
+        chat-widget [class*="Avatar"],
+        chat-widget [class*="agent-image"],
+        chat-widget [class*="AgentImage"] {
+                display: none !important;
+        }
+      </style>
+    <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="69e1402cefc06d08fe9b83c0"></script>
+  
 </body>
 </html>
