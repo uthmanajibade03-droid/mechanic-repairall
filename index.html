@@ -985,39 +985,73 @@
   // Initialize at step 1
   showStep(1);
 </script>
-  <!-- GHL Chat Widget (themed to match site) -->
-  <style>
-        /* Theme the GHL chat widget to match the site (black / white / #e8440a) */
-        chat-widget {
-                --chat-primary-color: #e8440a;
-                --chat-primary-text-color: #ffffff;
-                --chat-header-bg-color: #000000;
-                --chat-header-text-color: #ffffff;
-                --chat-bg-color: #000000;
-                --chat-text-color: #ffffff;
-                --chat-bubble-bg-color: #e8440a;
-                --chat-bubble-text-color: #ffffff;
-                --lc-primary: #e8440a;
-                --lc-primary-text: #ffffff;
-                --lc-background: #000000;
-                --lc-text: #ffffff;
-                position: fixed;
-                right: 20px;
-                bottom: 20px;
-                z-index: 2147483000;
-        }
-        /* Hide the agent avatar / picture inside the widget */
-        chat-widget img[src*="avatar"],
-        chat-widget img[alt*="avatar" i],
-        chat-widget img[alt*="agent" i],
-        chat-widget [class*="avatar"],
-        chat-widget [class*="Avatar"],
-        chat-widget [class*="agent-image"],
-        chat-widget [class*="AgentImage"] {
-                display: none !important;
-        }
-      </style>
+    <!-- GHL Chat Widget (themed to match RepairAll Auto LLC: black / white / #e8440a) -->
     <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="69e1402cefc06d08fe9b83c0"></script>
-  
+    <script>
+          (function () {
+                  var ACCENT = '#e8440a';
+                  var BG = '#000000';
+                  var FG = '#ffffff';
+                  var MUTED = '#b0b0b0';
+                  var RECEIVED = '#1a1a1a';
+
+                  var CSS_VARS = {
+                            '--chat-widget-primary-color': ACCENT,
+                            '--chat-widget-active-color': ACCENT,
+                            '--chat-widget-bubble-color': ACCENT,
+                            '--chat-widget-background-color': BG,
+                            '--chat-widget-header-color': BG,
+                            '--chat-widget-header-darken-color': '#1a1a1a',
+                            '--chat-widget-sender-message-color': ACCENT,
+                            '--chat-widget-sender-message-text-color': FG,
+                            '--chat-widget-received-message-color': RECEIVED,
+                            '--chat-widget-received-message-text-color': FG,
+                            '--chat-widget-header-message-text-color': FG,
+                            '--chat-widget-welcome-message-text-color': FG,
+                            '--chat-widget-system-message-text-color': MUTED,
+                            '--chat-widget-button-color': ACCENT,
+                            '--chat-widget-avatar-border-color': ACCENT
+                  };
+
+                  var HIDE_AVATAR_CSS = '\n.lc_text-widget_prompt--avatar,\n.lc_text-widget_message--avatar,\n.header-circular-image,\n.header-circular-image-container,\n.message-circular-image,\n.message-circular-image-container,\nimg.circular-image,\nimg[alt="Avatar"] { display: none !important; }\n';
+
+                  function applyTheme(widget) {
+                            if (!widget) return false;
+                            // Apply CSS vars as inline !important on the host element
+                            Object.keys(CSS_VARS).forEach(function (k) {
+                                        widget.style.setProperty(k, CSS_VARS[k], 'important');
+                            });
+                            // Inject a style into the shadow root to hide avatars
+                            var sr = widget.shadowRoot;
+                            if (sr && !sr.getElementById('ra-custom-theme')) {
+                                        var s = document.createElement('style');
+                                        s.id = 'ra-custom-theme';
+                                        s.textContent = HIDE_AVATAR_CSS;
+                                        sr.appendChild(s);
+                            }
+                            return !!sr;
+                  }
+
+                  function tryApply() {
+                            var widget = document.querySelector('chat-widget');
+                            if (widget && widget.shadowRoot) {
+                                        applyTheme(widget);
+                                        return true;
+                            }
+                            return false;
+                  }
+
+                  // Poll until the widget is ready, then stop.
+                  var attempts = 0;
+                  var interval = setInterval(function () {
+                            attempts++;
+                            if (tryApply() || attempts > 60) clearInterval(interval);
+                  }, 500);
+
+                  // Also observe in case the widget re-mounts.
+                  var observer = new MutationObserver(function () { tryApply(); });
+                  observer.observe(document.body, { childList: true, subtree: true });
+          })();
+    </script>  
 </body>
 </html>
